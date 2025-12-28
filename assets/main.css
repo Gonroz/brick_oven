@@ -1,0 +1,45 @@
+/* App-wide styling */
+body {
+  background-color: #0f1116;
+  color: darkslategray;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 20px;
+  /* max-width: ; */
+  /* max-height: 20px; */
+}
+
+.conatiner {
+  display: grid;
+  height: 100vh;
+}
+
+.navbar {
+  display: flex;
+  width: 120px;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background-color: #777;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  width: 100%;
+  border-radius: 8px;
+  background-color: #9b7ead;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.renderarea {
+  display: grid;
+  flex-grow: 1;
+  padding: 20px;
+  background-color: darkgreen;
+}
