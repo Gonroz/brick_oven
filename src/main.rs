@@ -17,10 +17,12 @@ enum Route {
 #[component]
 fn App() -> Element {
     rsx! {
-        document::Link { rel: "icon", href: FAVICON }
-        document::Link { rel: "stylesheet", href: MAIN_CSS }
-        NavBar {}
-        RenderArea {}
+        div { class: "dashboard-container",
+            document::Link { rel: "icon", href: FAVICON }
+            document::Link { rel: "stylesheet", href: MAIN_CSS }
+            NavBar {}
+            RenderArea {}
+        }
     }
 }
 
@@ -36,7 +38,7 @@ pub fn RenderArea() -> Element {
 #[component]
 pub fn NavBar() -> Element {
     rsx! {
-        div { class: "container",
+        // div { class: "container",
         div { class: "navbar",
             ul {
                 li { class: "nav-item", "Order" }
@@ -47,6 +49,6 @@ pub fn NavBar() -> Element {
                 li { class: "nav-item", "Order" }
             }
         }
-        }
+        // }
     }
 }
