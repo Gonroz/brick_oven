@@ -5,7 +5,8 @@ body {
   padding: 0;
   height: 100vh;
   width: 100vw;
-  overflow: hidden;
+  /* hide during normal use. one to make sure there is no overflow */
+  /* overflow: hidden; */
   background-color: #0f1116;
   color: darkslategray;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,9 +15,7 @@ body {
 
 .dashboard-container {
   display: grid;
-  grid-template-columns:
-    /*200px*/
-    auto 1fr;
+  grid-template-columns: auto 1fr;
   height: 100vh;
   width: 100vw;
 }
@@ -55,10 +54,11 @@ body {
 
 .renderarea {
   height: 100vh;
+  width: 100%;
   color: white;
-  display: grid;
-  align-items: center;
-  justify-content: center;
+  /* display: grid; */
+  /* align-items: center; */
+  /* justify-content: center; */
   /* display: grid; */
   /* flex-grow: 1; */
   /* padding: 20px; */
@@ -68,22 +68,66 @@ body {
 .order-container {
   /* background-color: palevioletred; */
   display: grid;
-  grid-template-rows:
-    /*200px*/
-    auto 1fr;
-  width: 100vw;
-  height: 100vh;
+  /* grid-template-rows: */
+  /*200px*/
+  /* auto 1fr; */
+  width: 100%;
+  /* width: 1000px; */
+  height: 100%;
+  /* grid-template-columns: auto 1fr 1fr; */
+  /* grid-template-areas: */
+  /* "a a b" */
+  /* "c c b"; */
+  /* grid-template-areas: */
+  /* "oo co" */
+  /* "oo co"; */
+  display: flex;
+  flex-direction: row;
+}
+
+.order-options {
+  /* width: 1000px; */
+  width: 100%;
+  grid-area: oo;
+  display: flex;
+  flex-direction: column;
+  /* display: grid; */
+  /* grid-template-areas: */
+  /* "a a" */
+  /* "b b"; */
 }
 
 .sizes {
+  grid-area: a;
   background-color: darkslategray;
+  align-items: center;
+  justify-content: center;
+  /* justify-self: top; */
   display: flex;
   flex-direction: row;
-  width: 100vw;
+  /* width: 100vw; */
+  width: 100%;
   height: 100px;
 }
 
 .toppings {
+  /* align-items: center; */
+  /* justify-content: center; */
+  grid-area: b;
   display: grid;
+  /* width: 100vw; */
+  height: 100%;
   background-color: darkolivegreen;
+}
+
+.current-order-container {
+  justify-content: center;
+  /* grid-area: b; */
+  background-color: darkgoldenrod;
+  /* justify-self: end; */
+  display: grid;
+  height: 100%;
+  width: 40%;
+  /* width: 100%; */
+  /* width: 100vw; */
 }
