@@ -22,7 +22,12 @@ pub fn Order() -> Element {
                 }
             } // order options bracket
             div { class: "current-order-container",
-                "Hello there! General Kenobi!"
+                div { class: "current-order",
+                    "current order"
+                }
+                button { class: "send-to-kitchen",
+                    "Send to Kitchen"
+                }
             }
         }
     }

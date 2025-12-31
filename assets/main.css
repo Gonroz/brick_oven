@@ -10,7 +10,6 @@ body {
   background-color: #0f1116;
   color: darkslategray;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* my stuff */
 }
 
 .dashboard-container {
@@ -27,8 +26,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* padding: 15px 10px; */
-  /* gap: 15px; */
   border-right: 2px solid #333;
   box-sizing: border-box;
 }
@@ -46,7 +43,6 @@ body {
   background-color: #9b7ead;
   color: black;
   font-weight: bold;
-  /* font-size: 1rem; */
   text-align: center;
   cursor: pointer;
   border: none;
@@ -56,45 +52,22 @@ body {
   height: 100vh;
   width: 100%;
   color: white;
-  /* display: grid; */
-  /* align-items: center; */
-  /* justify-content: center; */
-  /* display: grid; */
-  /* flex-grow: 1; */
-  /* padding: 20px; */
   background-color: darkgreen;
 }
 
 .order-container {
-  /* background-color: palevioletred; */
   display: grid;
-  /* grid-template-rows: */
-  /*200px*/
-  /* auto 1fr; */
   width: 100%;
-  /* width: 1000px; */
   height: 100%;
-  /* grid-template-columns: auto 1fr 1fr; */
-  /* grid-template-areas: */
-  /* "a a b" */
-  /* "c c b"; */
-  /* grid-template-areas: */
-  /* "oo co" */
-  /* "oo co"; */
   display: flex;
   flex-direction: row;
 }
 
 .order-options {
-  /* width: 1000px; */
   width: 100%;
   grid-area: oo;
   display: flex;
   flex-direction: column;
-  /* display: grid; */
-  /* grid-template-areas: */
-  /* "a a" */
-  /* "b b"; */
 }
 
 .sizes {
@@ -102,32 +75,47 @@ body {
   background-color: darkslategray;
   align-items: center;
   justify-content: center;
-  /* justify-self: top; */
   display: flex;
   flex-direction: row;
-  /* width: 100vw; */
   width: 100%;
   height: 100px;
 }
 
 .toppings {
-  /* align-items: center; */
-  /* justify-content: center; */
+  align-items: center;
   grid-area: b;
   display: grid;
-  /* width: 100vw; */
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   height: 100%;
   background-color: darkolivegreen;
 }
 
+.toppings button {
+  justify-self: center;
+  width: 50%;
+  height: 50%;
+}
+
 .current-order-container {
-  justify-content: center;
-  /* grid-area: b; */
+  align-items: center;
   background-color: darkgoldenrod;
-  /* justify-self: end; */
-  display: grid;
+  display: flex;
   height: 100%;
   width: 40%;
-  /* width: 100%; */
-  /* width: 100vw; */
+  flex-direction: column;
+}
+
+.current-order {
+  justify-content: center;
+  align-items: center;
+  background-color: darkgray;
+  height: 85%;
+  width: 90%;
+  margin-top: 5%;
+}
+
+.send-to-kitchen {
+  margin-top: 5%;
+  width: 90%;
+  height: 7.5%;
 }
