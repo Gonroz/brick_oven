@@ -44,11 +44,11 @@ pub fn NavBar() -> Element {
         div { class: "navbar",
             ul {
                 li { class: "nav-item", "Order" }
-                li { class: "nav-item", "Order" }
-                li { class: "nav-item", "Order" }
-                li { class: "nav-item", "Order" }
-                li { class: "nav-item", "Order" }
-                li { class: "nav-item", "Order" }
+                li { class: "nav-item", "Prep" }
+                li { class: "nav-item", "Oven" }
+                li { class: "nav-item", "Pickup" }
+                li { class: "nav-item", "Delivery" }
+                li { class: "nav-item", "Settings" }
             }
         }
         // }
