@@ -2,9 +2,10 @@ use dioxus::prelude::*;
 
 mod components;
 
+use crate::components::*;
+
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
-const HEADER_SVG: Asset = asset!("/assets/header.svg");
 
 fn main() {
     dioxus::launch(App);
@@ -12,8 +13,11 @@ fn main() {
 
 #[derive(Routable, Clone, PartialEq)]
 enum Route {
+    #[layout(NavBar)]
     #[route("/")]
     RenderArea,
+    #[route("/Order")]
+    Order,
 }
 
 #[component]
@@ -22,35 +26,51 @@ fn App() -> Element {
         div { class: "dashboard-container",
             document::Link { rel: "icon", href: FAVICON }
             document::Link { rel: "stylesheet", href: MAIN_CSS }
-            NavBar {}
-            RenderArea {}
+            // NavBar {}
+            // RenderArea {}
+            Router::<Route> {}
         }
     }
 }
 
 #[component]
 pub fn RenderArea() -> Element {
+    // rsx! {
+    //     div { class: "renderarea",
+    //         components::order::Order {}
+    //     }
+    // }
     rsx! {
         div { class: "renderarea",
-            components::order::Order {}
+            "RenderArea"
         }
     }
 }
 
 #[component]
 pub fn NavBar() -> Element {
+    let current_route: Route = use_route();
+    // println!("Current route: {}", current_route.to_string());
+
     rsx! {
-        // div { class: "container",
         div { class: "navbar",
-            ul {
-                li { class: "nav-item", "Order" }
-                li { class: "nav-item", "Prep" }
-                li { class: "nav-item", "Oven" }
-                li { class: "nav-item", "Pickup" }
-                li { class: "nav-item", "Delivery" }
-                li { class: "nav-item", "Settings" }
+            // div { class: "nav-item",
+            //     Link { to: Route::Order,
+            //         "Order" }
+            // }
+            Link { class:"nav-item", to: Route::Order,
+                style: if current_route.to_string() == "/Order" {
+                    "background-color: #EBB7FF; transition: background-color .1s ease-in-out"
+                },
+                // div { class: "nav-item", "Order"}
+                "Order"
             }
+            div { class: "nav-item", "Prep" }
+            div { class: "nav-item", "Oven" }
+            div { class: "nav-item", "Pickup" }
+            div { class: "nav-item", "Delivery" }
+            div { class: "nav-item", "Settings" }
         }
-        // }
+        Outlet::<Route> {}
     }
 }
