@@ -60,7 +60,7 @@ pub fn NavBar() -> Element {
             // }
             Link { class:"nav-item", to: Route::Order,
                 style: if current_route.to_string() == "/Order" {
-                    "background-color: #EBB7FF; transition: background-color .1s ease-in-out"
+                    "background-color: #EBB7FF;"
                 },
                 // div { class: "nav-item", "Order"}
                 "Order"
