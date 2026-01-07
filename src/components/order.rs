@@ -4,11 +4,18 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn Order() -> Element {
+    let mut pizzas: Signal<Vec<Pizza>> = use_signal(|| vec![]);
+
     rsx! {
         div { class: "order-container",
             div { class: "order-options",
                 div { class: "sizes",
-                    button { "Personal" }
+                    button {
+                        onclick: move |_| {
+                            // blah
+                            pizzas.write().push(Pizza { size: PizzaSize::Personal, topping: PizzaTopping::Onion });
+                        },
+                        "Personal" }
                     button { "Small" }
                     button { "Large" }
                     button { "Sheet" }
@@ -29,7 +36,7 @@ pub fn Order() -> Element {
                 }
             } // order options bracket
             div { class: "current-order-container",
-                CurrentOrder {}
+                CurrentOrder { pizzas: pizzas }
                 button { class: "send-to-kitchen",
                     "Send to Kitchen"
                 }
@@ -38,14 +45,9 @@ pub fn Order() -> Element {
     }
 }
 
-// #[derive(PartialEq, Clone, Props)]
-// struct PizzaProps {
-//     size: u8,
-//     toppings: u8,
-// }
-
 #[derive(PartialEq, Clone, Copy)]
 pub enum PizzaSize {
+    Personal,
     Small,
     Large,
 }
@@ -53,6 +55,7 @@ pub enum PizzaSize {
 impl fmt::Display for PizzaSize {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            PizzaSize::Personal => write!(f, "Personal"),
             PizzaSize::Small => write!(f, "Small"),
             PizzaSize::Large => write!(f, "Large"),
         }
@@ -91,30 +94,29 @@ struct Pizza {
     topping: PizzaTopping,
 }
 
-// impl fmt::Display for Pizza {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         write!(f, format!("Size: {self.size} Topping: {self.topping}"))
-//     }
-// }
-
 #[component]
-pub fn CurrentOrder() -> Element {
-    let mut pizzas: Signal<Vec<Pizza>> = use_signal(|| vec![]);
-    pizzas.push(Pizza {
-        size: PizzaSize::Small,
-        topping: PizzaTopping::Pepperoni,
-    });
-    pizzas.push(Pizza {
-        size: PizzaSize::Large,
-        topping: PizzaTopping::Onion,
-    });
+pub fn CurrentOrder(mut pizzas: Signal<Vec<Pizza>>) -> Element {
+    // let mut pizzas: Signal<Vec<Pizza>> = use_signal(|| vec![]);
+    // pizzas.push(Pizza {
+    //     size: PizzaSize::Small,
+    //     topping: PizzaTopping::Pepperoni,
+    // });
+    // pizzas.push(Pizza {
+    //     size: PizzaSize::Large,
+    //     topping: PizzaTopping::Onion,
+    // });
+
+    // pizzas.write().push(Pizza {
+    //     size: PizzaSize::Large,
+    //     topping: PizzaTopping::Pepperoni,
+    // });
 
     rsx! {
         div { class: "current-order",
             for p in pizzas.iter() {
                 PizzaDiv { size: p.size, topping: p.topping }
             }
-            "argh"
+            // "argh"
         }
     }
 }
