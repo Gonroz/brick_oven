@@ -68,6 +68,7 @@ enum PizzaSize {
     Sheet,
 }
 
+// This is required in order to actually display the values
 impl fmt::Display for PizzaSize {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -87,6 +88,7 @@ enum PizzaTopping {
     Spinach,
 }
 
+// This is required in order to actually display the values
 impl fmt::Display for PizzaTopping {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
