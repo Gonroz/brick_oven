@@ -13,12 +13,27 @@ pub fn Order() -> Element {
                     button {
                         onclick: move |_| {
                             // blah
-                            pizzas.write().push(Pizza { size: PizzaSize::Personal, topping: PizzaTopping::Onion });
+                            pizzas.write().push(Pizza { size: PizzaSize::Personal, toppings: None });
                         },
                         "Personal" }
-                    button { "Small" }
-                    button { "Large" }
-                    button { "Sheet" }
+                    button {
+                        onclick: move |_| {
+                            // blah
+                            pizzas.write().push(Pizza { size: PizzaSize::Small, toppings: None });
+                        },
+                        "Small" }
+                    button {
+                        onclick: move |_| {
+                            // blah
+                            pizzas.write().push(Pizza { size: PizzaSize::Large, toppings: None });
+                        },
+                        "Large" }
+                    button {
+                        onclick: move |_| {
+                            // blah
+                            pizzas.write().push(Pizza { size: PizzaSize::Sheet, toppings: None });
+                        },
+                        "Sheet" }
                 }
                 div { class: "toppings",
                     button {
@@ -46,10 +61,11 @@ pub fn Order() -> Element {
 }
 
 #[derive(PartialEq, Clone, Copy)]
-pub enum PizzaSize {
+enum PizzaSize {
     Personal,
     Small,
     Large,
+    Sheet,
 }
 
 impl fmt::Display for PizzaSize {
@@ -58,63 +74,60 @@ impl fmt::Display for PizzaSize {
             PizzaSize::Personal => write!(f, "Personal"),
             PizzaSize::Small => write!(f, "Small"),
             PizzaSize::Large => write!(f, "Large"),
+            PizzaSize::Sheet => write!(f, "Sheet"),
         }
     }
 }
 
 #[derive(PartialEq, Clone, Copy)]
-pub enum PizzaTopping {
+enum PizzaTopping {
     Pepperoni,
-    Onion,
+    Onions,
+    Olives,
+    Spinach,
 }
 
 impl fmt::Display for PizzaTopping {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             PizzaTopping::Pepperoni => write!(f, "Pepperoni"),
-            PizzaTopping::Onion => write!(f, "Onion"),
+            PizzaTopping::Onions => write!(f, "Onions"),
+            PizzaTopping::Olives => write!(f, "Olives"),
+            PizzaTopping::Spinach => write!(f, "Spinach"),
         }
     }
 }
 
 #[component]
-pub fn PizzaDiv(size: PizzaSize, topping: PizzaTopping) -> Element {
-    let mut size = use_signal(|| PizzaSize::Small);
-    let mut topping = use_signal(|| PizzaTopping::Pepperoni);
+fn PizzaDiv(pizza: Pizza) -> Element {
+    let size = use_signal(|| pizza.size);
+    let signal_toppings = use_signal(|| pizza.toppings);
 
     rsx! {
-        div {
-            "Size: {size} -- Toppings: {topping}"
+        if let Some(toppings) = *signal_toppings.read() {
+            div {
+                "Size: {size} -- Toppings: {toppings}"
+            }
+        } else {
+            div {
+                "Size: {size} -- Toppings: None"
+            }
         }
     }
 }
 
+#[derive(PartialEq, Clone, Copy)]
 struct Pizza {
     size: PizzaSize,
-    topping: PizzaTopping,
+    toppings: Option<PizzaTopping>,
 }
 
 #[component]
-pub fn CurrentOrder(mut pizzas: Signal<Vec<Pizza>>) -> Element {
-    // let mut pizzas: Signal<Vec<Pizza>> = use_signal(|| vec![]);
-    // pizzas.push(Pizza {
-    //     size: PizzaSize::Small,
-    //     topping: PizzaTopping::Pepperoni,
-    // });
-    // pizzas.push(Pizza {
-    //     size: PizzaSize::Large,
-    //     topping: PizzaTopping::Onion,
-    // });
-
-    // pizzas.write().push(Pizza {
-    //     size: PizzaSize::Large,
-    //     topping: PizzaTopping::Pepperoni,
-    // });
-
+fn CurrentOrder(mut pizzas: Signal<Vec<Pizza>>) -> Element {
     rsx! {
         div { class: "current-order",
             for p in pizzas.iter() {
-                PizzaDiv { size: p.size, topping: p.topping }
+                PizzaDiv { pizza: p.clone() }
             }
             // "argh"
         }
