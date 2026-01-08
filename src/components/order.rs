@@ -50,18 +50,32 @@ pub fn Order() -> Element {
                         onclick: move |_| {
                             println!("Pepperoni pressed -- is some?: {}", active_pizza().is_some());
                             if active_pizza().is_some() {
-                                // for p in pizzas.write().iter_mut() {
-                                //     if p.id == active_pizza().unwrap() {
-                                //         p.toppings = Some(PizzaTopping::Pepperoni);
-                                //         println!("{}", p.toppings.unwrap());
-                                //     }
-                                // }
-                                // let mut ap = &mut pizzas.write().iter_mut().find(|p| p.id == active_pizza.unwrap());
+                                let mut p = pizzas.write();
+                                for a in p.iter_mut() {
+                                    if a.id == active_pizza.unwrap() {
+                                        a.toppings = Some(PizzaTopping::Pepperoni);
+                                        println!("{}", a.toppings.unwrap());
+                                    }
+                                }
                             }
                         },
                         "Pepperoni"
                     }
-                    button { "Onions" }
+                    button {
+                        onclick: move |_| {
+                            println!("Onions pressed -- is some?: {}", active_pizza().is_some());
+                            if active_pizza().is_some() {
+                                let mut p = pizzas.write();
+                                for a in p.iter_mut() {
+                                    if a.id == active_pizza.unwrap() {
+                                        a.toppings = Some(PizzaTopping::Onions);
+                                        println!("{}", a.toppings.unwrap());
+                                    }
+                                }
+                            }
+                        },
+                        "Onions"
+                    }
                     button { "Olives" }
                     button { "Spinach" }
                     for _ in 0..8 {
@@ -120,19 +134,21 @@ impl fmt::Display for PizzaTopping {
 }
 
 #[component]
-fn PizzaDiv(pizza: Pizza) -> Element {
-    let id = use_signal(|| pizza.id);
-    let size = use_signal(|| pizza.size);
-    let signal_toppings = use_signal(|| pizza.toppings);
-
+fn PizzaDiv(pizza: Pizza, active_pizza: Signal<Option<u64>>) -> Element {
     rsx! {
-        if let Some(toppings) = *signal_toppings.read() {
+        if !pizza.toppings.is_none() {
             div {
-                "Size: {size} -- Toppings: {toppings} -- ID: {id}"
+                onclick: move |_| {
+                    active_pizza.set(Some(pizza.id));
+                },
+                "Size: {pizza.size} -- Toppings: {pizza.toppings.unwrap()} -- ID: {pizza.id}"
             }
         } else {
             div {
-                "Size: {size} -- Toppings: None -- ID: {id}"
+                onclick: move |_| {
+                    active_pizza.set(Some(pizza.id));
+                },
+                "Size: {pizza.size} -- Toppings: None -- ID: {pizza.id}"
             }
         }
     }
@@ -150,7 +166,7 @@ fn CurrentOrder(mut pizzas: Signal<Vec<Pizza>>, active_pizza: Signal<Option<u64>
     rsx! {
         div { class: "current-order",
             for p in pizzas.read().iter() {
-                PizzaDiv { pizza: *p }
+                PizzaDiv { pizza: *p, active_pizza: active_pizza }
             }
             // div {
             //     if active_pizza.read().is_some() {
