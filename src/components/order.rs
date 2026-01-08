@@ -4,7 +4,9 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn Order() -> Element {
+    let mut pizza_count = use_signal::<u64>(|| 0);
     let mut pizzas: Signal<Vec<Pizza>> = use_signal(|| vec![]);
+    let mut active_pizza = use_signal::<Option<u64>>(|| None);
 
     rsx! {
         div { class: "order-container",
@@ -12,34 +14,51 @@ pub fn Order() -> Element {
                 div { class: "sizes",
                     button {
                         onclick: move |_| {
-                            // blah
-                            pizzas.write().push(Pizza { size: PizzaSize::Personal, toppings: None });
+                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Personal, toppings: None });
+                            // active_pizza.set(Some(pizza_count()));
+                            // println!("first {}", pizza_count());
+                            active_pizza.set(Some(pizza_count()));
+                            // println!("ap: {}", active_pizza().unwrap());
+                            pizza_count.set(pizza_count() + 1);
+                            // println!("second {}", pizza_count());
                         },
                         "Personal" }
                     button {
                         onclick: move |_| {
-                            // blah
-                            pizzas.write().push(Pizza { size: PizzaSize::Small, toppings: None });
+                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Small, toppings: None });
+                            active_pizza.set(Some(pizza_count()));
+                            pizza_count.set(pizza_count() + 1);
                         },
                         "Small" }
                     button {
                         onclick: move |_| {
-                            // blah
-                            pizzas.write().push(Pizza { size: PizzaSize::Large, toppings: None });
+                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Large, toppings: None });
+                            active_pizza.set(Some(pizza_count()));
+                            pizza_count.set(pizza_count() + 1);
                         },
                         "Large" }
                     button {
                         onclick: move |_| {
-                            // blah
-                            pizzas.write().push(Pizza { size: PizzaSize::Sheet, toppings: None });
+                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Sheet, toppings: None });
+                            active_pizza.set(Some(pizza_count()));
+                            pizza_count.set(pizza_count() + 1);
                         },
                         "Sheet" }
                 }
                 div { class: "toppings",
                     button {
-                        // onclick: move |_| {
-                        //     let _ = Pizza();
-                        // },
+                        onclick: move |_| {
+                            println!("Pepperoni pressed -- is some?: {}", active_pizza().is_some());
+                            if active_pizza().is_some() {
+                                // for p in pizzas.write().iter_mut() {
+                                //     if p.id == active_pizza().unwrap() {
+                                //         p.toppings = Some(PizzaTopping::Pepperoni);
+                                //         println!("{}", p.toppings.unwrap());
+                                //     }
+                                // }
+                                // let mut ap = &mut pizzas.write().iter_mut().find(|p| p.id == active_pizza.unwrap());
+                            }
+                        },
                         "Pepperoni"
                     }
                     button { "Onions" }
@@ -51,7 +70,7 @@ pub fn Order() -> Element {
                 }
             } // order options bracket
             div { class: "current-order-container",
-                CurrentOrder { pizzas: pizzas }
+                CurrentOrder { pizzas: pizzas, active_pizza: active_pizza }
                 button { class: "send-to-kitchen",
                     "Send to Kitchen"
                 }
@@ -102,17 +121,18 @@ impl fmt::Display for PizzaTopping {
 
 #[component]
 fn PizzaDiv(pizza: Pizza) -> Element {
+    let id = use_signal(|| pizza.id);
     let size = use_signal(|| pizza.size);
     let signal_toppings = use_signal(|| pizza.toppings);
 
     rsx! {
         if let Some(toppings) = *signal_toppings.read() {
             div {
-                "Size: {size} -- Toppings: {toppings}"
+                "Size: {size} -- Toppings: {toppings} -- ID: {id}"
             }
         } else {
             div {
-                "Size: {size} -- Toppings: None"
+                "Size: {size} -- Toppings: None -- ID: {id}"
             }
         }
     }
@@ -120,18 +140,29 @@ fn PizzaDiv(pizza: Pizza) -> Element {
 
 #[derive(PartialEq, Clone, Copy)]
 struct Pizza {
+    id: u64,
     size: PizzaSize,
     toppings: Option<PizzaTopping>,
 }
 
 #[component]
-fn CurrentOrder(mut pizzas: Signal<Vec<Pizza>>) -> Element {
+fn CurrentOrder(mut pizzas: Signal<Vec<Pizza>>, active_pizza: Signal<Option<u64>>) -> Element {
     rsx! {
         div { class: "current-order",
-            for p in pizzas.iter() {
-                PizzaDiv { pizza: p.clone() }
+            for p in pizzas.read().iter() {
+                PizzaDiv { pizza: *p }
             }
-            // "argh"
+            // div {
+            //     if active_pizza.read().is_some() {
+            //         "Active: {active_pizza.unwrap().size}"
+            //         PizzaDiv { pizza: active_pizza.unwrap() }
+            //         // PizzaDiv { pizza: active_pizza.unwrap().clone() }
+            //     } else {
+            //         div {
+            //             "no active pizza"
+            //         }
+            //     }
+            // }
         }
     }
 }
