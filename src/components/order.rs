@@ -14,28 +14,28 @@ pub fn Order() -> Element {
                 div { class: "sizes",
                     button {
                         onclick: move |_| {
-                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Personal, toppings: None });
+                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Personal, toppings: vec![] });
                             active_pizza.set(Some(pizza_count()));
                             pizza_count.set(pizza_count() + 1);
                         },
                         "Personal" }
                     button {
                         onclick: move |_| {
-                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Small, toppings: None });
+                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Small, toppings: vec![] });
                             active_pizza.set(Some(pizza_count()));
                             pizza_count.set(pizza_count() + 1);
                         },
                         "Small" }
                     button {
                         onclick: move |_| {
-                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Large, toppings: None });
+                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Large, toppings: vec![] });
                             active_pizza.set(Some(pizza_count()));
                             pizza_count.set(pizza_count() + 1);
                         },
                         "Large" }
                     button {
                         onclick: move |_| {
-                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Sheet, toppings: None });
+                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Sheet, toppings: vec![] });
                             active_pizza.set(Some(pizza_count()));
                             pizza_count.set(pizza_count() + 1);
                         },
@@ -48,8 +48,7 @@ pub fn Order() -> Element {
                                 let mut p = pizzas.write();
                                 for a in p.iter_mut() {
                                     if a.id == active_pizza.unwrap() {
-                                        a.toppings = Some(PizzaTopping::Pepperoni);
-                                        println!("{}", a.toppings.unwrap());
+                                        a.toppings.push(PizzaTopping::Pepperoni);
                                     }
                                 }
                             }
@@ -62,16 +61,39 @@ pub fn Order() -> Element {
                                 let mut p = pizzas.write();
                                 for a in p.iter_mut() {
                                     if a.id == active_pizza.unwrap() {
-                                        a.toppings = Some(PizzaTopping::Onions);
-                                        println!("{}", a.toppings.unwrap());
+                                        a.toppings.push(PizzaTopping::Onions);
                                     }
                                 }
                             }
                         },
                         "Onions"
                     }
-                    button { "Olives" }
-                    button { "Spinach" }
+                    button {
+                        onclick: move |_| {
+                            if active_pizza().is_some() {
+                                let mut p = pizzas.write();
+                                for a in p.iter_mut() {
+                                    if a.id == active_pizza.unwrap() {
+                                        a.toppings.push(PizzaTopping::Olives);
+                                    }
+                                }
+                            }
+                        },
+                        "Olives"
+                    }
+                    button {
+                        onclick: move |_| {
+                            if active_pizza().is_some() {
+                                let mut p = pizzas.write();
+                                for a in p.iter_mut() {
+                                    if a.id == active_pizza.unwrap() {
+                                        a.toppings.push(PizzaTopping::Spinach);
+                                    }
+                                }
+                            }
+                        },
+                        "Spinach"
+                    }
                     for _ in 0..8 {
                         button { "blah" }
                     }
@@ -136,31 +158,38 @@ fn PizzaDiv(pizza: Pizza, active_pizza: Signal<Option<u64>>) -> Element {
     };
 
     rsx! {
-        if !pizza.toppings.is_none() {
+        div {
+            class: class,
+            onclick: move |_| {
+                active_pizza.set(Some(pizza.id));
+            },
             div {
-                class: class,
-                onclick: move |_| {
-                    active_pizza.set(Some(pizza.id));
-                },
-                "Size: {pizza.size} -- Toppings: {pizza.toppings.unwrap()} -- ID: {pizza.id}"
+                "Size: {pizza.size}"
             }
-        } else {
+            ul {
+                for topping in pizza.toppings.iter() {
+                    li {
+                        "{topping}"
+                    }
+                }
+            }
+            // for topping in pizza.toppings.iter() {
+            //     div {
+            //         "{topping}"
+            //     }
+            // }
             div {
-                class: class,
-                onclick: move |_| {
-                    active_pizza.set(Some(pizza.id));
-                },
-                "Size: {pizza.size} -- Toppings: None -- ID: {pizza.id}"
+                "ID: {pizza.id}"
             }
         }
     }
 }
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Clone)]
 struct Pizza {
     id: u64,
     size: PizzaSize,
-    toppings: Option<PizzaTopping>,
+    toppings: Vec<PizzaTopping>,
 }
 
 #[component]
@@ -168,7 +197,7 @@ fn CurrentOrder(mut pizzas: Signal<Vec<Pizza>>, active_pizza: Signal<Option<u64>
     rsx! {
         div { class: "current-order",
             for p in pizzas.read().iter() {
-                PizzaDiv { pizza: *p, active_pizza: active_pizza }
+                PizzaDiv { pizza: p.clone(), active_pizza: active_pizza }
             }
         }
     }
