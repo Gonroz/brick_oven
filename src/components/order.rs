@@ -2,11 +2,30 @@ use core::fmt;
 
 use dioxus::prelude::*;
 
+#[derive(Clone, Copy)]
+struct OrderContext {
+    pizza_count: Signal<u64>,
+    pizzas: Signal<Vec<Pizza>>,
+    active_pizza: Signal<Option<u64>>,
+}
+
+impl OrderContext {
+    fn new() -> Self {
+        OrderContext {
+            pizza_count: Signal::new(0),
+            pizzas: Signal::new(vec![]),
+            active_pizza: Signal::new(None),
+        }
+    }
+}
+
 #[component]
 pub fn Order() -> Element {
     let mut pizza_count = use_signal::<u64>(|| 0);
     let mut pizzas: Signal<Vec<Pizza>> = use_signal(|| vec![]);
     let mut active_pizza = use_signal::<Option<u64>>(|| None);
+    // use_context_provider(|| OrderContext::new());
+    // let mut context = use_context::<OrderContext>();
 
     rsx! {
         div { class: "order-container",
