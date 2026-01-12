@@ -14,7 +14,8 @@ pub fn Order() -> Element {
                 div { class: "sizes",
                     button {
                         onclick: move |_| {
-                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Personal, toppings: vec![] });
+                            // pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Personal, toppings: vec![] });
+                            pizzas.write().push(Pizza::new(pizza_count(), PizzaSize::Personal, vec![]));
                             active_pizza.set(Some(pizza_count()));
                             pizza_count.set(pizza_count() + 1);
                         },
@@ -145,6 +146,19 @@ impl fmt::Display for PizzaSize {
     }
 }
 
+#[derive(PartialEq, Clone)]
+struct Pizza {
+    id: u64,
+    size: PizzaSize,
+    toppings: Vec<PizzaTopping>,
+}
+
+impl Pizza {
+    fn new(id: u64, size: PizzaSize, toppings: Vec<PizzaTopping>) -> Self {
+        Self { id, size, toppings }
+    }
+}
+
 #[derive(PartialEq, Clone, Copy)]
 enum PizzaTopping {
     Pepperoni,
@@ -199,13 +213,6 @@ fn PizzaDiv(pizza: Pizza, active_pizza: Signal<Option<u64>>) -> Element {
             }
         }
     }
-}
-
-#[derive(PartialEq, Clone)]
-struct Pizza {
-    id: u64,
-    size: PizzaSize,
-    toppings: Vec<PizzaTopping>,
 }
 
 #[component]
