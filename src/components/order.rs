@@ -21,94 +21,29 @@ impl OrderContext {
 
 #[component]
 pub fn Order() -> Element {
-    let mut pizza_count = use_signal::<u64>(|| 0);
-    let mut pizzas: Signal<Vec<Pizza>> = use_signal(|| vec![]);
-    let mut active_pizza = use_signal::<Option<u64>>(|| None);
-    // use_context_provider(|| OrderContext::new());
-    // let mut context = use_context::<OrderContext>();
+    use_context_provider(|| OrderContext::new());
 
     rsx! {
         div { class: "order-container",
             div { class: "order-options",
                 div { class: "sizes",
-                    button {
-                        onclick: move |_| {
-                            // pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Personal, toppings: vec![] });
-                            pizzas.write().push(Pizza::new(pizza_count(), PizzaSize::Personal, vec![]));
-                            active_pizza.set(Some(pizza_count()));
-                            pizza_count.set(pizza_count() + 1);
-                        },
-                        "Personal" }
-                    button {
-                        onclick: move |_| {
-                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Small, toppings: vec![] });
-                            active_pizza.set(Some(pizza_count()));
-                            pizza_count.set(pizza_count() + 1);
-                        },
-                        "Small" }
-                    button {
-                        onclick: move |_| {
-                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Large, toppings: vec![] });
-                            active_pizza.set(Some(pizza_count()));
-                            pizza_count.set(pizza_count() + 1);
-                        },
-                        "Large" }
-                    button {
-                        onclick: move |_| {
-                            pizzas.write().push(Pizza { id: pizza_count(), size: PizzaSize::Sheet, toppings: vec![] });
-                            active_pizza.set(Some(pizza_count()));
-                            pizza_count.set(pizza_count() + 1);
-                        },
-                        "Sheet" }
+                    SizeButton { pizza_size: PizzaSize::Personal }
+                    SizeButton { pizza_size: PizzaSize::Small }
+                    SizeButton { pizza_size: PizzaSize::Large }
+                    SizeButton { pizza_size: PizzaSize::Sheet }
                 }
                 div { class: "toppings",
-                    ToppingButton { topping_type: PizzaTopping::Pepperoni, pizzas: pizzas, active_pizza: active_pizza },
-                    button {
-                        onclick: move |_| {
-                            if active_pizza().is_some() {
-                                let mut p = pizzas.write();
-                                for a in p.iter_mut() {
-                                    if a.id == active_pizza.unwrap() {
-                                        a.toppings.push(PizzaTopping::Onions);
-                                    }
-                                }
-                            }
-                        },
-                        "Onions"
-                    }
-                    button {
-                        onclick: move |_| {
-                            if active_pizza().is_some() {
-                                let mut p = pizzas.write();
-                                for a in p.iter_mut() {
-                                    if a.id == active_pizza.unwrap() {
-                                        a.toppings.push(PizzaTopping::Olives);
-                                    }
-                                }
-                            }
-                        },
-                        "Olives"
-                    }
-                    button {
-                        onclick: move |_| {
-                            if active_pizza().is_some() {
-                                let mut p = pizzas.write();
-                                for a in p.iter_mut() {
-                                    if a.id == active_pizza.unwrap() {
-                                        a.toppings.push(PizzaTopping::Spinach);
-                                    }
-                                }
-                            }
-                        },
-                        "Spinach"
-                    }
+                    ToppingButton { topping_type: PizzaTopping::Pepperoni }
+                    ToppingButton { topping_type: PizzaTopping::Onions }
+                    ToppingButton { topping_type: PizzaTopping::Olives }
+                    ToppingButton { topping_type: PizzaTopping::Spinach }
                     for _ in 0..8 {
                         button { "blah" }
                     }
                 }
             } // order options bracket
             div { class: "current-order-container",
-                CurrentOrder { pizzas: pizzas, active_pizza: active_pizza }
+                CurrentOrder {}
                 button { class: "send-to-kitchen",
                     "Send to Kitchen"
                 }
@@ -118,26 +53,36 @@ pub fn Order() -> Element {
 }
 
 #[component]
-fn ToppingButton(
-    topping_type: PizzaTopping,
-    pizzas: Signal<Vec<Pizza>>,
-    active_pizza: Signal<Option<u64>>,
-) -> Element {
+fn SizeButton(pizza_size: PizzaSize) -> Element {
+    let mut order_context = use_context::<OrderContext>();
+    let pizza_id = *order_context.pizza_count.read();
+
     rsx! {
         button {
             onclick: move |_| {
-                if active_pizza().is_some() {
-                    for p in pizzas.write().iter_mut() {
+                order_context.pizzas.write().push(Pizza::new(pizza_id, pizza_size, vec![]));
+                order_context.active_pizza.set(Some(pizza_id));
+                order_context.pizza_count.set(pizza_id + 1);
+            },
+            "{pizza_size}"
+        }
+    }
+}
+
+#[component]
+fn ToppingButton(topping_type: PizzaTopping) -> Element {
+    let mut order_context = use_context::<OrderContext>();
+    let active_pizza = *order_context.active_pizza.read();
+
+    rsx! {
+        button {
+            onclick: move |_| {
+                if active_pizza.is_some() {
+                    for p in order_context.pizzas.write().iter_mut() {
                         if p.id == active_pizza.unwrap() {
                             p.toppings.push(topping_type);
                         }
                     }
-                    // let mut p = pizzas.write();
-                    // for a in p.iter_mut() {
-                    //     if a.id == active_pizza.unwrap() {
-                    //         a.toppings.push(PizzaTopping::Onions);
-                    //     }
-                    // }
                 }
             },
             "{topping_type}"
@@ -199,8 +144,11 @@ impl fmt::Display for PizzaTopping {
 }
 
 #[component]
-fn PizzaDiv(pizza: Pizza, active_pizza: Signal<Option<u64>>) -> Element {
-    let class = if active_pizza.read().is_some() && pizza.id == active_pizza.read().unwrap() {
+fn PizzaDiv(pizza: Pizza) -> Element {
+    let mut order_context = use_context::<OrderContext>();
+    let active_pizza = *order_context.active_pizza.read();
+
+    let class = if active_pizza.is_some() && pizza.id == active_pizza.unwrap() {
         "pizza-div active"
     } else {
         "pizza-div"
@@ -210,7 +158,7 @@ fn PizzaDiv(pizza: Pizza, active_pizza: Signal<Option<u64>>) -> Element {
         div {
             class: class,
             onclick: move |_| {
-                active_pizza.set(Some(pizza.id));
+                order_context.active_pizza.set(Some(pizza.id));
             },
             div {
                 "Size: {pizza.size}"
@@ -222,11 +170,6 @@ fn PizzaDiv(pizza: Pizza, active_pizza: Signal<Option<u64>>) -> Element {
                     }
                 }
             }
-            // for topping in pizza.toppings.iter() {
-            //     div {
-            //         "{topping}"
-            //     }
-            // }
             div {
                 "ID: {pizza.id}"
             }
@@ -235,11 +178,13 @@ fn PizzaDiv(pizza: Pizza, active_pizza: Signal<Option<u64>>) -> Element {
 }
 
 #[component]
-fn CurrentOrder(mut pizzas: Signal<Vec<Pizza>>, active_pizza: Signal<Option<u64>>) -> Element {
+fn CurrentOrder() -> Element {
+    let order_context = use_context::<OrderContext>();
+
     rsx! {
         div { class: "current-order",
-            for p in pizzas.read().iter() {
-                PizzaDiv { pizza: p.clone(), active_pizza: active_pizza }
+            for p in order_context.pizzas.read().iter() {
+                PizzaDiv { pizza: p.clone() }
             }
         }
     }
