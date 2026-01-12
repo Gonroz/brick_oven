@@ -42,19 +42,7 @@ pub fn Order() -> Element {
                         "Sheet" }
                 }
                 div { class: "toppings",
-                    button {
-                        onclick: move |_| {
-                            if active_pizza().is_some() {
-                                let mut p = pizzas.write();
-                                for a in p.iter_mut() {
-                                    if a.id == active_pizza.unwrap() {
-                                        a.toppings.push(PizzaTopping::Pepperoni);
-                                    }
-                                }
-                            }
-                        },
-                        "Pepperoni"
-                    }
+                    ToppingButton { topping_type: PizzaTopping::Pepperoni, pizzas: pizzas, active_pizza: active_pizza },
                     button {
                         onclick: move |_| {
                             if active_pizza().is_some() {
@@ -105,6 +93,34 @@ pub fn Order() -> Element {
                     "Send to Kitchen"
                 }
             }
+        }
+    }
+}
+
+#[component]
+fn ToppingButton(
+    topping_type: PizzaTopping,
+    pizzas: Signal<Vec<Pizza>>,
+    active_pizza: Signal<Option<u64>>,
+) -> Element {
+    rsx! {
+        button {
+            onclick: move |_| {
+                if active_pizza().is_some() {
+                    for p in pizzas.write().iter_mut() {
+                        if p.id == active_pizza.unwrap() {
+                            p.toppings.push(topping_type);
+                        }
+                    }
+                    // let mut p = pizzas.write();
+                    // for a in p.iter_mut() {
+                    //     if a.id == active_pizza.unwrap() {
+                    //         a.toppings.push(PizzaTopping::Onions);
+                    //     }
+                    // }
+                }
+            },
+            "{topping_type}"
         }
     }
 }
