@@ -9,7 +9,7 @@ thread_local! {
 
         connection.execute_batch(
             "CREATE TABLE IF NOT EXISTS pizzas (
-                id INTEGER PRIMARY KEY,
+                id INTEGER,
                 data TEXT NOT NULL
             );"
         ).unwrap();
@@ -37,7 +37,6 @@ pub async fn save_order(pizzas: Vec<pizza::Pizza>) -> Result<()> {
                 (pizza.id, &pizza),
             )
         })?;
-        println!("added pizza");
     }
     Ok(())
 }
