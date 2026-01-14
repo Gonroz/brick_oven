@@ -2,6 +2,8 @@ use core::fmt;
 
 use dioxus::prelude::*;
 
+use crate::server;
+
 #[derive(Clone, Copy)]
 struct OrderContext {
     pizza_count: Signal<u64>,
@@ -45,6 +47,9 @@ pub fn Order() -> Element {
             div { class: "current-order-container",
                 CurrentOrder {}
                 button { class: "send-to-kitchen",
+                    onclick: move |_| async move {
+                        _ = server::server_test("test".to_string()).await;
+                    },
                     "Send to Kitchen"
                 }
             }
