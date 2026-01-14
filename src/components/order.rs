@@ -2,12 +2,13 @@ use core::fmt;
 
 use dioxus::prelude::*;
 
+use crate::pizza;
 use crate::server;
 
 #[derive(Clone, Copy)]
 struct OrderContext {
     pizza_count: Signal<u64>,
-    pizzas: Signal<Vec<Pizza>>,
+    pizzas: Signal<Vec<pizza::Pizza>>,
     active_pizza: Signal<Option<u64>>,
 }
 
@@ -29,16 +30,16 @@ pub fn Order() -> Element {
         div { class: "order-container",
             div { class: "order-options",
                 div { class: "sizes",
-                    SizeButton { pizza_size: PizzaSize::Personal }
-                    SizeButton { pizza_size: PizzaSize::Small }
-                    SizeButton { pizza_size: PizzaSize::Large }
-                    SizeButton { pizza_size: PizzaSize::Sheet }
+                    SizeButton { pizza_size: pizza::PizzaSize::Personal }
+                    SizeButton { pizza_size: pizza::PizzaSize::Small }
+                    SizeButton { pizza_size: pizza::PizzaSize::Large }
+                    SizeButton { pizza_size: pizza::PizzaSize::Sheet }
                 }
                 div { class: "toppings",
-                    ToppingButton { topping_type: PizzaTopping::Pepperoni }
-                    ToppingButton { topping_type: PizzaTopping::Onions }
-                    ToppingButton { topping_type: PizzaTopping::Olives }
-                    ToppingButton { topping_type: PizzaTopping::Spinach }
+                    ToppingButton { topping_type: pizza::PizzaTopping::Pepperoni }
+                    ToppingButton { topping_type: pizza::PizzaTopping::Onions }
+                    ToppingButton { topping_type: pizza::PizzaTopping::Olives }
+                    ToppingButton { topping_type: pizza::PizzaTopping::Spinach }
                     for _ in 0..8 {
                         button { "blah" }
                     }
@@ -46,26 +47,21 @@ pub fn Order() -> Element {
             } // order options bracket
             div { class: "current-order-container",
                 CurrentOrder {}
-                button { class: "send-to-kitchen",
-                    onclick: move |_| async move {
-                        _ = server::server_test("test".to_string()).await;
-                    },
-                    "Send to Kitchen"
-                }
+                SendToKitchen {}
             }
         }
     }
 }
 
 #[component]
-fn SizeButton(pizza_size: PizzaSize) -> Element {
+fn SizeButton(pizza_size: pizza::PizzaSize) -> Element {
     let mut order_context = use_context::<OrderContext>();
     let pizza_id = *order_context.pizza_count.read();
 
     rsx! {
         button {
             onclick: move |_| {
-                order_context.pizzas.write().push(Pizza::new(pizza_id, pizza_size, vec![]));
+                order_context.pizzas.write().push(pizza::Pizza::new(pizza_id, pizza_size, vec![]));
                 order_context.active_pizza.set(Some(pizza_id));
                 order_context.pizza_count.set(pizza_id + 1);
             },
@@ -75,7 +71,7 @@ fn SizeButton(pizza_size: PizzaSize) -> Element {
 }
 
 #[component]
-fn ToppingButton(topping_type: PizzaTopping) -> Element {
+fn ToppingButton(topping_type: pizza::PizzaTopping) -> Element {
     let mut order_context = use_context::<OrderContext>();
     let active_pizza = *order_context.active_pizza.read();
 
@@ -95,61 +91,32 @@ fn ToppingButton(topping_type: PizzaTopping) -> Element {
     }
 }
 
-#[derive(PartialEq, Clone, Copy)]
-enum PizzaSize {
-    Personal,
-    Small,
-    Large,
-    Sheet,
-}
-
 // This is required in order to actually display the values
-impl fmt::Display for PizzaSize {
+impl fmt::Display for pizza::PizzaSize {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            PizzaSize::Personal => write!(f, "Personal"),
-            PizzaSize::Small => write!(f, "Small"),
-            PizzaSize::Large => write!(f, "Large"),
-            PizzaSize::Sheet => write!(f, "Sheet"),
+            pizza::PizzaSize::Personal => write!(f, "Personal"),
+            pizza::PizzaSize::Small => write!(f, "Small"),
+            pizza::PizzaSize::Large => write!(f, "Large"),
+            pizza::PizzaSize::Sheet => write!(f, "Sheet"),
         }
     }
 }
 
-#[derive(PartialEq, Clone)]
-struct Pizza {
-    id: u64,
-    size: PizzaSize,
-    toppings: Vec<PizzaTopping>,
-}
-
-impl Pizza {
-    fn new(id: u64, size: PizzaSize, toppings: Vec<PizzaTopping>) -> Self {
-        Self { id, size, toppings }
-    }
-}
-
-#[derive(PartialEq, Clone, Copy)]
-enum PizzaTopping {
-    Pepperoni,
-    Onions,
-    Olives,
-    Spinach,
-}
-
 // This is required in order to actually display the values
-impl fmt::Display for PizzaTopping {
+impl fmt::Display for pizza::PizzaTopping {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            PizzaTopping::Pepperoni => write!(f, "Pepperoni"),
-            PizzaTopping::Onions => write!(f, "Onions"),
-            PizzaTopping::Olives => write!(f, "Olives"),
-            PizzaTopping::Spinach => write!(f, "Spinach"),
+            pizza::PizzaTopping::Pepperoni => write!(f, "Pepperoni"),
+            pizza::PizzaTopping::Onions => write!(f, "Onions"),
+            pizza::PizzaTopping::Olives => write!(f, "Olives"),
+            pizza::PizzaTopping::Spinach => write!(f, "Spinach"),
         }
     }
 }
 
 #[component]
-fn PizzaDiv(pizza: Pizza) -> Element {
+fn PizzaDiv(pizza: pizza::Pizza) -> Element {
     let mut order_context = use_context::<OrderContext>();
     let active_pizza = *order_context.active_pizza.read();
 
@@ -191,6 +158,20 @@ fn CurrentOrder() -> Element {
             for p in order_context.pizzas.read().iter() {
                 PizzaDiv { pizza: p.clone() }
             }
+        }
+    }
+}
+
+#[component]
+fn SendToKitchen() -> Element {
+    let order_context = use_context::<OrderContext>();
+
+    rsx! {
+        button { class: "send-to-kitchen",
+            onclick: move |_| async move {
+                // _ = server::server_test("test".to_string()).await;
+            },
+            "Send to Kitchen"
         }
     }
 }
