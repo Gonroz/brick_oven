@@ -1,5 +1,3 @@
-use core::fmt;
-
 use dioxus::prelude::*;
 
 use crate::pizza;
@@ -7,9 +5,9 @@ use crate::server;
 
 #[derive(Clone, Copy)]
 struct OrderContext {
-    pizza_count: Signal<u64>,
+    pizza_count: Signal<i64>,
     pizzas: Signal<Vec<pizza::Pizza>>,
-    active_pizza: Signal<Option<u64>>,
+    active_pizza: Signal<Option<i64>>,
 }
 
 impl OrderContext {
@@ -91,30 +89,6 @@ fn ToppingButton(topping_type: pizza::PizzaTopping) -> Element {
     }
 }
 
-// This is required in order to actually display the values
-impl fmt::Display for pizza::PizzaSize {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            pizza::PizzaSize::Personal => write!(f, "Personal"),
-            pizza::PizzaSize::Small => write!(f, "Small"),
-            pizza::PizzaSize::Large => write!(f, "Large"),
-            pizza::PizzaSize::Sheet => write!(f, "Sheet"),
-        }
-    }
-}
-
-// This is required in order to actually display the values
-impl fmt::Display for pizza::PizzaTopping {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            pizza::PizzaTopping::Pepperoni => write!(f, "Pepperoni"),
-            pizza::PizzaTopping::Onions => write!(f, "Onions"),
-            pizza::PizzaTopping::Olives => write!(f, "Olives"),
-            pizza::PizzaTopping::Spinach => write!(f, "Spinach"),
-        }
-    }
-}
-
 #[component]
 fn PizzaDiv(pizza: pizza::Pizza) -> Element {
     let mut order_context = use_context::<OrderContext>();
@@ -170,6 +144,7 @@ fn SendToKitchen() -> Element {
         button { class: "send-to-kitchen",
             onclick: move |_| async move {
                 // _ = server::server_test("test".to_string()).await;
+                _ = server::save_order(order_context.pizzas.read().clone()).await;
             },
             "Send to Kitchen"
         }

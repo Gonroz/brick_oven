@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::order;
+use crate::pizza;
 
 #[cfg(feature = "server")]
 thread_local! {
@@ -10,7 +10,7 @@ thread_local! {
         connection.execute_batch(
             "CREATE TABLE IF NOT EXISTS pizzas (
                 id INTEGER PRIMARY KEY,
-                size TEXT NOT NULL
+                data TEXT NOT NULL
             );"
         ).unwrap();
 
@@ -26,6 +26,18 @@ pub async fn server_test(s: String) -> Result<()> {
 }
 
 #[post("/api/save_order")]
-pub async fn save_order() -> Result<()> {
+pub async fn save_order(pizzas: Vec<pizza::Pizza>) -> Result<()> {
+    if pizzas.is_empty() {
+        return Ok(());
+    }
+    for pizza in pizzas {
+        DB.with(|f| {
+            f.execute(
+                "INSERT INTO pizzas (id, data) VALUES (?1, ?2)",
+                (pizza.id, &pizza),
+            )
+        })?;
+        println!("added pizza");
+    }
     Ok(())
 }
