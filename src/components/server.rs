@@ -11,7 +11,7 @@ thread_local! {
             "CREATE TABLE IF NOT EXISTS pizzas (
                 database_id INTEGER PRIMARY KEY,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                order_id INTEGER,
+                order_id INTEGER NOT NULL,
                 id INTEGER,
                 data TEXT NOT NULL
             );"
@@ -39,7 +39,7 @@ pub async fn save_order(pizzas: Vec<pizza::Pizza>) -> Result<()> {
     DB.with(|f| {
         let last_id: i32 = f
             .query_row(
-                "SELECT order_id FROM pizzas ORDER BY rowid DESC LIMIT 1",
+                "SELECT order_id FROM pizzas ORDER BY database_id DESC LIMIT 1",
                 [],
                 |row| row.get(0),
             )
