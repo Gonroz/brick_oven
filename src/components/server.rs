@@ -34,33 +34,22 @@ pub async fn save_order(pizzas: Vec<pizza::Pizza>) -> Result<()> {
         return Ok(());
     }
 
-    // let last_id: i32 = f
-    //     .query_row("SELECT COALESCE(MAX(order_id), 0) FROM pizzas", [], |row| {
-    //         row.get(0)
-    //     })
-    //     .unwrap_or(0);
+    let mut order_id: i32 = 0;
 
-    // DB.with(|f| {
-    //     let last_id: i32 = f.query_row(
-    //         "SELECT COALESCE(MAX(order_id), 0) FROM pizzas",
-    //         [],
-    //         |row| row.get(0),
-    //     ).unwrap_or(0)
-    // });
+    DB.with(|f| {
+        let last_id: i32 = f
+            .query_row(
+                "SELECT order_id FROM pizzas ORDER BY rowid DESC LIMIT 1",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap_or(0);
+
+        order_id = if last_id >= 99 { 1 } else { last_id + 1 };
+    });
 
     for pizza in pizzas {
         DB.with(|f| {
-            // TODO: this is completely wrong generated code. dumb af LLMs
-            // let last_id: i32 = f
-            //     .query_row("SELECT COALESCE(MAX(order_id), 0) FROM pizzas", [], |row| {
-            //         row.get(0)
-            //     })
-            //     .unwrap_or(0);
-
-            // let order_id = (last_id % 99) + 1;
-
-            let order_id: i32 = 0;
-
             f.execute(
                 "INSERT INTO pizzas (order_id, id, data) VALUES (?1, ?2, ?3)",
                 (order_id, pizza.id, &pizza),
