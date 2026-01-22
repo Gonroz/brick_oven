@@ -12,10 +12,11 @@ thread_local! {
                 database_id INTEGER PRIMARY KEY,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 order_id INTEGER NOT NULL,
-                id INTEGER,
-                data TEXT NOT NULL
+                id INTEGER NOT NULL,
+                data TEXT NOT NULL,
+                status TEXT NOT NULL
             );"
-        ).unwrap();
+        ).expect("Couldn't make table.");
 
         connection
     };
@@ -34,6 +35,7 @@ pub async fn save_order(pizzas: Vec<pizza::Pizza>) -> Result<()> {
         return Ok(());
     }
 
+    // Figure out what order number to give order
     let mut order_id: i32 = 0;
 
     DB.with(|f| {
@@ -48,13 +50,15 @@ pub async fn save_order(pizzas: Vec<pizza::Pizza>) -> Result<()> {
         order_id = if last_id >= 99 { 1 } else { last_id + 1 };
     });
 
+    // Add the pizzas into the database including order_id to know what is what
     for pizza in pizzas {
         DB.with(|f| {
             f.execute(
-                "INSERT INTO pizzas (order_id, id, data) VALUES (?1, ?2, ?3)",
-                (order_id, pizza.id, &pizza),
+                "INSERT INTO pizzas (order_id, id, data, status) VALUES (?1, ?2, ?3, ?4)",
+                (order_id, pizza.id, &pizza, "Prep".to_string()),
             )
-        })?;
+        })
+        .expect("Couldn't insert into pizzas table.");
     }
     Ok(())
 }
