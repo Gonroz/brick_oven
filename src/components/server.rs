@@ -62,3 +62,26 @@ pub async fn save_order(pizzas: Vec<pizza::Pizza>) -> Result<()> {
     }
     Ok(())
 }
+
+#[get("/api/get_prep_pizzas")]
+pub async fn get_prep_pizzas() -> Result<Vec<pizza::Pizza>> {
+    DB.with(|f| {
+        let mut stmt = f
+            .prepare("SELECT data FROM pizzas WHERE status = 'Prep' ORDER BY database_id ASC")
+            .expect("Failed to prepare statement");
+
+        let pizza_iter = stmt
+            .query_map([], |row| {
+                let data: String = row.get(0)?;
+                let pizza: pizza::Pizza = serde_json::from_str(&data).unwrap();
+                Ok(pizza)
+            })
+            .expect("Query failed");
+
+        let mut pizzas = Vec::new();
+        for pizza in pizza_iter {
+            pizzas.push(pizza.expect("Row error"));
+        }
+        Ok(pizzas)
+    })
+}
