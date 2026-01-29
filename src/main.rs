@@ -18,6 +18,8 @@ enum Route {
     RenderArea,
     #[route("/Order")]
     Order,
+    #[route("/Prep")]
+    Prep,
 }
 
 #[component]
@@ -65,7 +67,13 @@ pub fn NavBar() -> Element {
                 // div { class: "nav-item", "Order"}
                 "Order"
             }
-            div { class: "nav-item", "Prep" }
+            Link { class:"nav-item", to: Route::Prep,
+                style: if current_route.to_string() == "/Prep" {
+                    "background-color: #EBB7FF;"
+                },
+                // div { class: "nav-item", "Prep"}
+                "Prep"
+            }
             div { class: "nav-item", "Oven" }
             div { class: "nav-item", "Pickup" }
             div { class: "nav-item", "Delivery" }
