@@ -6,7 +6,7 @@ body {
   height: 100vh;
   width: 100vw;
   /* hide during normal use. one to make sure there is no overflow */
-  /* overflow: hidden; */
+  overflow: hidden;
   background-color: #0f1116;
   color: darkslategray;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -37,6 +37,7 @@ a {
   border-right: 2px solid #333;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .nav-item {
@@ -168,6 +169,17 @@ a {
   cursor: pointer;
 }
 
+.prep-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  /* overflow-x: auto; */
+  overflow: hidden;
+}
+
 .prep-station {
   background-color: #D9D9D9;
   width: 100%;
@@ -175,12 +187,15 @@ a {
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding-right: 1%;
   overflow-x: auto;
 }
 
 .pizza-prep {
   background-color: #9A9A9A;
+  flex-shrink: 0;
   height: 90%;
-  width: 40px;
-  margin-inline: 1%;
+  width: 20%;
+  padding: 1%;
+  margin-inline-start: 1%;
 }
