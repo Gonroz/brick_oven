@@ -16,8 +16,8 @@ enum Route {
     #[layout(NavBar)]
     #[route("/")]
     RenderArea,
-    #[route("/Order")]
-    Order,
+    #[route("/OrderScreen")]
+    OrderScreen,
     #[route("/Prep")]
     Prep,
 }
@@ -39,7 +39,7 @@ fn App() -> Element {
 pub fn RenderArea() -> Element {
     // rsx! {
     //     div { class: "renderarea",
-    //         components::order::Order {}
+    //         components::order::OrderScreen {}
     //     }
     // }
     rsx! {
@@ -57,14 +57,14 @@ pub fn NavBar() -> Element {
     rsx! {
         div { class: "navbar",
             // div { class: "nav-item",
-            //     Link { to: Route::Order,
-            //         "Order" }
+            //     Link { to: Route::OrderScreen,
+            //         "OrderScreen" }
             // }
-            Link { class:"nav-item", to: Route::Order,
-                style: if current_route.to_string() == "/Order" {
+            Link { class:"nav-item", to: Route::OrderScreen,
+                style: if current_route.to_string() == "/OrderScreen" {
                     "background-color: #EBB7FF;"
                 },
-                // div { class: "nav-item", "Order"}
+                // div { class: "nav-item", "OrderScreen"}
                 "Order"
             }
             Link { class:"nav-item", to: Route::Prep,

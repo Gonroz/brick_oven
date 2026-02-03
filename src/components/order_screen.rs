@@ -4,15 +4,15 @@ use crate::pizza;
 use crate::server;
 
 #[derive(Clone, Copy)]
-struct OrderContext {
+struct OrderScreenContext {
     pizza_count: Signal<i64>,
     pizzas: Signal<Vec<pizza::Pizza>>,
     active_pizza: Signal<Option<i64>>,
 }
 
-impl OrderContext {
+impl OrderScreenContext {
     fn new() -> Self {
-        OrderContext {
+        OrderScreenContext {
             pizza_count: Signal::new(0),
             pizzas: Signal::new(vec![]),
             active_pizza: Signal::new(None),
@@ -21,8 +21,8 @@ impl OrderContext {
 }
 
 #[component]
-pub fn Order() -> Element {
-    use_context_provider(|| OrderContext::new());
+pub fn OrderScreen() -> Element {
+    use_context_provider(|| OrderScreenContext::new());
 
     rsx! {
         div { class: "order-container",
@@ -44,7 +44,7 @@ pub fn Order() -> Element {
                 }
             } // order options bracket
             div { class: "current-order-container",
-                CurrentOrder {}
+                CurrentOrderScreen {}
                 SendToKitchen {}
             }
         }
@@ -53,7 +53,7 @@ pub fn Order() -> Element {
 
 #[component]
 fn SizeButton(pizza_size: pizza::PizzaSize) -> Element {
-    let mut order_context = use_context::<OrderContext>();
+    let mut order_context = use_context::<OrderScreenContext>();
     let pizza_id = *order_context.pizza_count.read();
 
     rsx! {
@@ -70,7 +70,7 @@ fn SizeButton(pizza_size: pizza::PizzaSize) -> Element {
 
 #[component]
 fn ToppingButton(topping_type: pizza::PizzaTopping) -> Element {
-    let mut order_context = use_context::<OrderContext>();
+    let mut order_context = use_context::<OrderScreenContext>();
     let active_pizza = *order_context.active_pizza.read();
 
     rsx! {
@@ -91,7 +91,7 @@ fn ToppingButton(topping_type: pizza::PizzaTopping) -> Element {
 
 #[component]
 fn PizzaDiv(pizza: pizza::Pizza) -> Element {
-    let mut order_context = use_context::<OrderContext>();
+    let mut order_context = use_context::<OrderScreenContext>();
     let active_pizza = *order_context.active_pizza.read();
 
     let class = if active_pizza.is_some() && pizza.id == active_pizza.unwrap() {
@@ -124,8 +124,8 @@ fn PizzaDiv(pizza: pizza::Pizza) -> Element {
 }
 
 #[component]
-fn CurrentOrder() -> Element {
-    let order_context = use_context::<OrderContext>();
+fn CurrentOrderScreen() -> Element {
+    let order_context = use_context::<OrderScreenContext>();
 
     rsx! {
         div { class: "current-order",
@@ -138,7 +138,7 @@ fn CurrentOrder() -> Element {
 
 #[component]
 fn SendToKitchen() -> Element {
-    let order_context = use_context::<OrderContext>();
+    let order_context = use_context::<OrderScreenContext>();
 
     rsx! {
         button { class: "send-to-kitchen",
