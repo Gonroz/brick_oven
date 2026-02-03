@@ -1,3 +1,4 @@
+pub mod order;
 pub mod order_screen;
 pub mod pizza;
 pub mod prep;
